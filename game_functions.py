@@ -1,13 +1,18 @@
 import sys
-
 import pygame
 
-def check_keydown_events(event, ship): 
+from bullet import Bullet
+
+def check_keydown_events(event,ai_senttings, screen, ship, bullets): 
     """ Responde a pressionamentos de tecla"""
     if event.key == pygame.K_RIGHT:
         ship.moving_right = True
     elif event.key == pygame.K_LEFT:
         ship.moving_left = True
+    elif event.key == pygame.K_SPACE:
+        #cria um novo projétil e adiciona ao grupo de projérteis
+        new_bullet = Bullet(ai_senttings, screen, ship)
+        bullets.add(new_bullet)
 
 def check_keyup_events(event, ship): 
     """ Responde a solturas de tecla"""
@@ -17,7 +22,7 @@ def check_keyup_events(event, ship):
         ship.moving_left =  False
 
 
-def check_events(ship):
+def check_events(ai_senttings, screen, ship, bullets):
      #Observa e responde eventos de teclado e mouse
       for event in pygame.event.get():
           if event.type == pygame.QUIT:
