@@ -4,6 +4,7 @@ from time import sleep
 import pygame
 from alien import Alien
 from bullet import Bullet
+from button import Button
 
 def check_keydown_events(event, ai_settings, screen, ship, bullets): 
     """ Responde a pressionamentos de tecla"""
@@ -74,7 +75,7 @@ def check_events(ai_settings, screen, ship, bullets):
           elif event.type == pygame.KEYUP:
               check_keyup_events(event, ship)
      
-def update_screen(ai_settings, screen, ship,aliens, bullets):
+def update_screen(ai_settings, screen,stats, ship,aliens, bullets, play_button):
     """ Atualiza as imagens da tela e alterna para um nova tela"""
     screen.fill(ai_settings.bg_color)
     #Redesenha todos os porjéteis atrás da espaçonave e dos aliens
@@ -83,6 +84,10 @@ def update_screen(ai_settings, screen, ship,aliens, bullets):
     ship.blitme()
     #alien.blitme()
     aliens.draw(screen)
+
+    #Desenha o botão play se o jogo tiver inativo
+    if not stats.game_active:
+        play_button.draw_button()
     
     #Deixa a tela mais recente visivel
     pygame.display.flip()
