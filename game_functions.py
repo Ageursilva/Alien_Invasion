@@ -65,7 +65,7 @@ def check_keyup_events(event, ship):
     elif event.key == pygame.K_LEFT:
         ship.moving_left =  False
 
-def check_events(ai_settings, screen, ship, bullets):
+def check_events(ai_settings, screen,stats, play_button, ship, bullets):
      #Observa e responde eventos de teclado e mouse
       for event in pygame.event.get():
           if event.type == pygame.QUIT:
@@ -74,18 +74,41 @@ def check_events(ai_settings, screen, ship, bullets):
               check_keydown_events(event, ai_settings, screen, ship, bullets)
           elif event.type == pygame.KEYUP:
               check_keyup_events(event, ship)
-     
-def update_screen(ai_settings, screen,stats, ship,aliens, bullets, play_button):
+          elif event.type == pygame.MOUSEBUTTONDOWN:
+              mouse_x, mouse_y  =  pygame.mouse.get_pos()
+              check_play_button(ai_settings, screen, stats, play_button, ship, mouse_x, mouse_y)
+
+def check_play_button(ai_settings, screen, stats, play_button, ship, aliens,bullets, mouse_x, mouse_y):
+    """Inicializa um novo jogo quando o jogador clicar em play."""
+    button_clicked = play_button.rect.collidepoint(mouse_x, mouse_y)
+    if button_clicked and not stats.game_active:
+        #Oculta o cursor do mouse
+       pygame.mouse.set_visible(False)
+       
+       # Reinicia os ados estatisticos do jogo
+       stats.reset_stats()
+       stats.game_active =  True
+       
+       #Esvazia a lista de aliens e projeteis
+       aliens.empty()
+       bullets.empty()
+       
+       #Cria uma nova frota de centraliza a espaçonave
+       create_fleet(ai_settings, screen, ship, aliens)
+       ship.center_ship()
+    
+
+    
+def update_screen(ai_settings, screen, stats, ship, aliens, bullets, play_button):
     """ Atualiza as imagens da tela e alterna para um nova tela"""
     screen.fill(ai_settings.bg_color)
-    #Redesenha todos os porjéteis atrás da espaçonave e dos aliens
+    #Redesenha todos os projéteis atrás da espaçonave e dos aliens
     for bullet in bullets.sprites():
         bullet.draw_bullet()
     ship.blitme()
     #alien.blitme()
     aliens.draw(screen)
-
-    #Desenha o botão play se o jogo tiver inativo
+   #Desenha o botão play se o jogo tiver inativo
     if not stats.game_active:
         play_button.draw_button()
     
@@ -141,7 +164,8 @@ def ship_hit(ai_settings,stats, screen, ship, aliens, bullets):
         #Faz uma pausa 
         sleep(0.10)
     else:
-        stats.game_actieve =  False
+        stats.game_active =  False
+        pygame.mouse.set_visible(True)
 
 def check_aliens_bottom(ai_settings, stats, screen, ship, aliens, bullets):
     """ Verifica se algum alien alcançou a parte inferiro da tela""" 
